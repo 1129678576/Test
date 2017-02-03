@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trc.dao.DataDao">	
+    	<!-- 定义数据配置的list(resultMap)-->
+    <resultMap id="Datas" type="Case_bus_data">
+        <id column="id" property="id" />
+        <result column="method_id" property="method_id" />
+        <result column="group_id" property="group_id" />
+        <result column="key" property="key" />
+		<result column="value" property="value" />
+        <result column="creater" property="creater" />
+        <result column="create_time" property="create_time" />
+        <result column="modifier" property="modifier" />
+        <result column="modify_time" property="modify_time" />
+    </resultMap>
+    	<!-- 自定义resultMap参数列表为Map<group_id,Map<key,Case_bus_data>>-->
+ 	    <!-- 获取Data列表，通过方法的id和组别的id -->
+    <select id="listData"  resultMap="Datas" >  
+       select * from case_bus_data where method_id=#{0} and group_id=#{1}; 
+    </select>
+     <select id="listDataByMethod" parameterType="int" resultMap="Datas" >  
+       select * from case_bus_data where method_id=#{method_id} ; 
+    </select>
+    	<!-- 添加一条Data -->
+    <insert id="addData"  parameterType="Case_bus_data" keyProperty="id" useGeneratedKeys="true">  
+ 	INSERT INTO case_bus_data VALUES(null,#{method_id},#{group_id},#{key},
+ 	#{value},#{creater},#{create_time},#{modifier},#{modify_time});
+    </insert> 
+    	<!-- 更新一条Data -->
+    <update id="updateData" parameterType="Case_bus_data" >  
+ 	update case_bus_data
+ 	set 
+ 	value=#{value}
+ 	where id=#{id}
+    </update> 
+        	<!-- 更新相关data的key值 -->
+    <update id="updateKey" >  
+ 	update case_bus_data
+ 	set 
+ 	key=#{2}
+ 	where method_id=#{0} and key=#{1}
+    </update> 
+    	<!-- 删除一条Data -->
+	<delete id="deleteData" parameterType="int">
+		delete from case_bus_data where id=#{id}
+	</delete>
+            <!-- 根据method_id、group_id和key获取一个Data -->
+    <select id="findDataBymgk"  resultType="Case_bus_data">  
+       select * from case_bus_data where method_id=#{0} and group_id=#{1} and key=#{2}; 
+    </select>
+    		<!-- 批量更新Data -->
+    <update id="updateDatas"  parameterType="java.util.List">  
+        
+          <foreach collection="list" item="Data" index="index" open="" close="" separator=";">  
+                update case_bus_data   
+                <set>  
+                  value=#{Data.value}  
+                </set>  
+                where id = ${Data.id}  
+         </foreach>  
+            
+    </update> 
+    		<!-- 批量插入数据 -->
+    <insert id="addDatas" useGeneratedKeys="true" parameterType="java.util.List">   
+    insert into case_bus_data (method_id,group_id,key_,value_,creater,create_time,modifier,modify_time) values
+    <foreach collection="list" item="Data" index="index" separator="," >  
+        (#{Data.method_id},#{Data.group_id},#{Data.key},#{Data.value},#{Data.creater},#{Data.create_time},#{Data.modifier},#{Data.modify_time})  
+    </foreach>  
+	</insert>  
+    			<!-- 批量删除数据 -->
+    <delete id="deleteDatas" parameterType="int">
+        delete from case_bus_data where id in
+        <foreach item="dataid" collection="list" open="(" separator="," close=")">
+            #{dataid}
+        </foreach>
+    </delete>
+    	<!-- 通过Groupid批量删除数据 -->
+    <delete id="deleteDatasByGroup" parameterType="java.util.List">
+        delete from case_bus_data where group_id in
+        <foreach item="groupid" collection="list" open="(" separator="," close=")">
+            #{groupid}
+        </foreach>
+    </delete>
+    
+</mapper>

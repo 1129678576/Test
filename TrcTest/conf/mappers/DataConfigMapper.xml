@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trc.dao.DataConfigDao">	
+	<!-- 添加一条数据配置 -->
+    <insert id="addConfig"  parameterType="Case_bas_config" keyProperty="id" useGeneratedKeys="true">  
+ 	INSERT INTO case_bas_config VALUES(null,#{son},#{parent_id},#{description},#{creater},#{create_time},#{modifier},null,#{son_type});
+    </insert> 
+    <!-- 修改一条数据配置 -->
+    <update id="updateConfig" parameterType="Case_bas_config" >  
+ 	update case_bas_config 
+ 	set 
+ 	son=#{son},parent_id=#{parent_id},description=#{description},creater=#{creater},
+ 	create_time=#{create_time},modifier=#{modifier},modify_time=#{modify_time},son_type=#{son_type}
+ 	where id=#{id}
+    </update> 
+	<!-- 删除一个数据配置 -->
+	<delete id="deleteConfig" parameterType="int">
+		delete from case_bas_config where id=#{id}
+	</delete>
+		<!-- 根据父级id删除一个数据配置 -->
+	<delete id="deleteConfigByParent" parameterType="int">
+		delete from case_bas_config where parent_id=#{parent_id}
+	</delete>
+	
+	<!-- 定义数据配置的list(resultMap)-->
+    <resultMap id="Case_bas_configs" type="Case_bas_config">
+        <id column="id" property="id" />
+        <result column="son" property="son" />
+        <result column="parent_id" property="parent_id" />
+        <result column="description" property="description" />
+        <result column="creater" property="creater" />
+        <result column="create_time" property="create_time" />
+        <result column="cmodifier" property="modifier" />
+        <result column="modify_time" property="modify_time" />
+        <result column="son_type" property="son_type" />
+    </resultMap>
+    <!-- 获取公司列表 -->
+    <select id="listCompany" resultMap="Case_bas_configs" >  
+       select * from case_bas_config where parent_id=1; 
+    </select>
+        <!-- 获取下级列表 -->
+    <select id="listNext" parameterType="int" resultMap="Case_bas_configs" >  
+       select * from case_bas_config where parent_id=#{parent_id}; 
+    </select>
+    
+        <!-- 根据id获取一个confg -->
+    <select id="findConfigById" parameterType="int" resultType="Case_bas_config">  
+       select * from case_bas_config where id=#{id}; 
+    </select>
+    <select id="findConfigByIdSon" resultType="Case_bas_config">  
+       select * from case_bas_config where parent_id=#{0} and son=#{1}; 
+    </select>
+</mapper>

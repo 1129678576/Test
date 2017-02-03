@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trc.dao.GroupDao">	
+    	<!-- 定义数据配置的list(resultMap)-->
+    <resultMap id="Groups" type="Group">
+        <id column="id" property="id" />
+        <result column="group_" property="group" />
+        <result column="method_id" property="method_id" />
+        <result column="creater" property="creater" />
+        <result column="create_time" property="create_time" />
+        <result column="modify_time" property="modify_time" />
+    </resultMap>
+        <!-- 获取公司列表 -->
+    <select id="listGroup" parameterType="int" resultMap="Groups" >  
+       select * from group_ where method_id=#{method_id} ORDER BY group_; 
+    </select>
+    	<!-- 添加一条Group -->
+    <insert id="addGroup"  parameterType="Group" keyProperty="id" useGeneratedKeys="true">  
+ 	INSERT INTO group_ VALUES(null,#{group},#{method_id},#{creater},#{create_time},null);
+    </insert> 
+    	<!-- 更新一条Group -->
+    <update id="updateGroup" parameterType="Group" >  
+ 	update group_
+ 	set 
+ 	group_=#{group}
+ 	where id=#{id}
+    </update> 
+    	<!-- 删除一条数据配置 -->
+	<delete id="deleteGroup" parameterType="int">
+		delete from case_bus_data where group_id=#{id};
+		delete from group_ where id=#{id};
+	</delete>
+            <!-- 根据method_id和group获取一个group -->
+    <select id="findGroupBymg"  resultType="Group">  
+       select * from group_ where method_id=#{0} and group_=#{1}; 
+    </select>
+    			<!-- 批量删除数据 -->
+    <delete id="deleteGroups" parameterType="int">
+        delete from group_ where id in
+        <foreach item="id" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    		<!-- 插入Group，返回主键 -->
+	<insert id="addGroupGetID" parameterType="Group">  
+    INSERT INTO group_ VALUES(null,#{group},#{method_id},#{creater},#{create_time},null); 
+    <selectKey resultType="java.lang.Integer" keyProperty="id">  
+      CALL IDENTITY()  
+    </selectKey>  
+	</insert>
+    
+</mapper>

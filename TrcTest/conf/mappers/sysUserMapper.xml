@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trc.dao.sysUserDao">	
+	<!--  通过ID查询单条记录  -->  
+    <select id="findUserById" parameterType="int" resultType="sysUser">  
+       select * from sys_user where id = #{userId}  
+    </select>  
+      <!--通过用户名查找用户是否存在-->
+    <select id="selectUserByUsername" parameterType="String" resultType="sysUser">  
+       select * from sys_user where username = #{username}  
+    </select> 
+    
+   
+        <!--配置一个resultMap 指定返回的类型 -->
+          <!--配置一个resultMap sysUser-->
+    <resultMap id="sysUsers" type="sysUser">
+        <id column="id" property="id" />
+        <result column="username" property="username" />
+        <result column="passowrd" property="password" />
+        <result column="nickname" property="nickname" />
+        <result column="face" property="face" />
+    </resultMap>
+     <!--  查询所有的用户  -->  
+     <select id="findAllUser" resultMap="sysUsers" >  
+       select * from sys_user   
+    </select>
+    <!-- 更新用户信息 -->
+    <select id="updateUser" parameterType="sysUser" resultType="Integer">  
+ 	update sys_user
+		<set>
+			<if test="username!=null and username!=''">
+		 		username=#{username},
+		 	</if>
+		 	<if test="password!=null and password!=''">
+		 		password=#{password},
+		 	</if>
+		 	<if test="nickname!=null and nickname!=''">
+		 		nickname=#{nickname},
+		 	</if>
+		 	<if test="face!=null and face!=''">
+		 		face=#{face},
+		 	</if>
+		</set>
+		where id=#{id}
+    </select> 
+       <!-- 删除用户 -->
+	<delete id="deleteUser" parameterType="int">
+		delete from sys_user where id=#{id}
+	</delete>
+	  <!-- 获取用户数量 -->
+    <select id="getUsercount" resultType="Integer">
+		SELECT COUNT(*) FROM sys_user
+	</select>
+	  <!-- 增加一个用户 -->
+    <insert id="addUser" parameterType="sysUser" keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO sys_user VALUES(null,#{username},#{password},#{nickname},#{face})
+	</insert>
+     <!-- 登录，根据用户名和密码登录 -->
+     <select id="login"  parameterType="sysUser"	resultType="sysUser">
+		SELECT * FROM sys_user where username=#{username} and password=#{password}
+	</select>
+	<!-- 更新默认项目 -->
+    <select id="updateProject"  resultType="Integer">  
+ 	update sys_user set project=#{1}where id=#{0}
+    </select> 
+</mapper>
